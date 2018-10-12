@@ -6,8 +6,10 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.mapbox.mapboxsdk.LibraryLoader;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.maps.TelemetryDefinition;
 import com.mapbox.mapboxsdk.storage.FileSource;
 
 import java.lang.annotation.Retention;
@@ -262,6 +264,17 @@ public class OfflineRegion {
               if (observer != null) {
                 observer.onStatusChanged(status);
               }
+
+              TelemetryDefinition telemetry = Mapbox.getTelemetry();
+              if (telemetry != null) {
+                if (status.getDownloadState() == STATE_ACTIVE
+                        && status.getCompletedResourceSize() == 0) {
+                  telemetry.onOfflineDownloadStart(definition);
+
+                } else if (status.isComplete()) {
+                  telemetry.onOfflineDownloadEndSuccess(definition, status);
+                }
+              }
             }
           });
         }
@@ -275,6 +288,10 @@ public class OfflineRegion {
             public void run() {
               if (observer != null) {
                 observer.onError(error);
+              }
+              TelemetryDefinition telemetry = Mapbox.getTelemetry();
+              if (telemetry != null) {
+                telemetry.onOfflineDownloadEndFailure(definition, error);
               }
             }
           });
