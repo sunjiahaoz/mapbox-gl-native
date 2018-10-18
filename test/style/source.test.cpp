@@ -708,6 +708,75 @@ TEST(Source, GeoJSonSourceUrlUpdate) {
     test.run();
 }
 
+TEST(Source, GeoJSONSourceSupercluster) {
+    SourceTest test;
+
+    test.fileSource.sourceResponse = [&] (const Resource& resource) {
+        EXPECT_EQ("http://url", resource.url);
+        Response response;
+        response.data = std::make_unique<std::string>(util::read_file("test/fixtures/supercluster/places.json"));
+        return response;
+    };
+
+    test.styleObserver.sourceLoaded = [&](Source& source) {
+        EXPECT_TRUE(source.is<GeoJSONSource>());
+        const auto geojson_source = source.as<GeoJSONSource>();
+        ASSERT_NE(geojson_source, nullptr);
+        EXPECT_FALSE(geojson_source->getClusterChildren(1).empty());
+        EXPECT_FALSE(geojson_source->getClusterLeaves(1).empty());
+        EXPECT_NE(geojson_source->getClusterExpansionZoom(1), 0);
+        test.end();
+    };
+
+    GeoJSONOptions options{};
+    options.cluster = true;
+
+    GeoJSONSource source("source", options);
+
+    source.setObserver(&test.styleObserver);
+    source.setURL(std::string("http://url"));
+
+    // Schedule an update for the source
+    test.loop.invoke([&] () {
+        source.loadDescription(test.fileSource);
+    });
+
+    test.run();
+}
+
+TEST(Source, GeoJSONSourceVT) {
+    SourceTest test;
+
+    test.fileSource.sourceResponse = [&] (const Resource& resource) {
+        EXPECT_EQ("http://url", resource.url);
+        Response response;
+        response.data = std::make_unique<std::string>(util::read_file("test/fixtures/supercluster/places.json"));
+        return response;
+    };
+
+    test.styleObserver.sourceLoaded = [&](Source& source) {
+        EXPECT_TRUE(source.is<GeoJSONSource>());
+        const auto geojson_source = source.as<GeoJSONSource>();
+        ASSERT_NE(geojson_source, nullptr);
+        EXPECT_TRUE(geojson_source->getClusterChildren(1).empty());
+        EXPECT_TRUE(geojson_source->getClusterLeaves(1).empty());
+        EXPECT_EQ(geojson_source->getClusterExpansionZoom(1), 0);
+        test.end();
+    };
+
+    GeoJSONSource source("source");
+
+    source.setObserver(&test.styleObserver);
+    source.setURL(std::string("http://url"));
+
+    // Schedule an update for the source
+    test.loop.invoke([&] () {
+        source.loadDescription(test.fileSource);
+    });
+
+    test.run();
+}
+
 TEST(Source, ImageSourceImageUpdate) {
     SourceTest test;
 
