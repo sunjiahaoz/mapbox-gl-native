@@ -284,10 +284,10 @@ commands:
         command: make ios-integration-test
   get-ios-code-coverage:
     steps:
-    - run:
+      - build-ios-test
+      - run:
         name: Get Code Coverage Report
-        command: 
-          - build-ios-test
+          command: 
           bash <(curl -s https://codecov.io/bash) -t $CODECOV_UPLOAD_TOKEN
         no_output_timeout: 2m
   build-macos-test:
