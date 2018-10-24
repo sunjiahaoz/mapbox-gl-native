@@ -282,6 +282,10 @@ commands:
     - run:
         name: Build ios-integration-test
         command: make ios-integration-test
+  get-code-coverage:
+    run:
+        name: Get Code Coverage Report
+        command: bash <(curl -s https://codecov.io/bash) -t $CODECOV_UPLOAD_TOKEN
   build-macos-test:
     steps:
     - run:
@@ -849,6 +853,7 @@ jobs:
       - install-dependencies
       - build-ios-test
       - build-ios-integration-test
+      - get-code-coverage
       - check-public-symbols
       - run:
           name: Check symbol namespacing for mapbox-events-ios
