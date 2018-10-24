@@ -14,4 +14,14 @@ public interface OfflineRegionDefinition {
 
   LatLngBounds getBounds();
 
+  String getStyleURL();
+
+  double getMinZoom();
+
+  double getMaxZoom();
+
+  float getPixelRatio();
+
+  String getType();
+
 }
