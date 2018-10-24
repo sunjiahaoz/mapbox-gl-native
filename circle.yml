@@ -282,7 +282,7 @@ commands:
     - run:
         name: Build ios-integration-test
         command: make ios-integration-test
-  get-code-coverage:
+  get-ios-code-coverage:
     steps:
     - run:
         name: Get Code Coverage Report
@@ -854,7 +854,7 @@ jobs:
       - install-dependencies
       - build-ios-test
       - build-ios-integration-test
-      - get-code-coverage
+      - get-ios-code-coverage
       - check-public-symbols
       - run:
           name: Check symbol namespacing for mapbox-events-ios
