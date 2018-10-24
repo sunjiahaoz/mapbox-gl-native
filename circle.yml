@@ -287,9 +287,9 @@ commands:
     - run:
         name: Get Code Coverage Report
         command: 
-          script: 
-          xcbuild -project platform/ios/ios.xcworkspace -scheme dynamic build test -sdk iphonesimulator GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES
+          build-ios-test
           bash <(curl -s https://codecov.io/bash) -t $CODECOV_UPLOAD_TOKEN
+        no_output_timeout: 2m
   build-macos-test:
     steps:
     - run:
